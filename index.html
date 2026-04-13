@@ -4,9 +4,7 @@
 <meta charset="UTF-8">
 <title>Måndagsgolfen 2026</title>
 
-<!-- PWA: Manifest skapas dynamiskt -->
 <link rel="manifest" id="manifestPlaceholder">
-
 <meta name="theme-color" content="#00ff80">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -74,13 +72,6 @@
         font-size: 16px;
     }
 
-    select option {
-        background-color: #203a43;
-        color: #ffffff;
-        font-size: 16px;
-        padding: 8px;
-    }
-
     button {
         padding: 12px 18px;
         background: linear-gradient(135deg, #00ff80, #00cc66);
@@ -122,7 +113,6 @@
         border-bottom: 1px solid rgba(255,255,255,0.08);
     }
 
-    /* MOBILANPASSNING */
     @media (max-width: 768px) {
         .row {
             flex-direction: column;
@@ -150,7 +140,6 @@
 
 <div class="container">
 
-    <!-- REGISTRERA RUNDA -->
     <div class="box">
         <h2>Registrera runda</h2>
 
@@ -178,7 +167,6 @@
         <button onclick="saveRound()">Spara runda</button>
     </div>
 
-    <!-- GAMLA + AVAN -->
     <div class="row">
         <div class="box">
             <h2>Gamla – Leaderboard</h2>
@@ -195,7 +183,6 @@
         </div>
     </div>
 
-    <!-- PENGAR -->
     <div class="box">
         <h2>Inspelade pengar</h2>
         <table id="moneyTable">
@@ -203,7 +190,6 @@
         </table>
     </div>
 
-    <!-- BIRDIES + NÄRMAST -->
     <div class="row">
         <div class="box">
             <h2>Birdies</h2>
@@ -220,7 +206,6 @@
         </div>
     </div>
 
-    <!-- TOPP 10 -->
     <div class="box">
         <h2>Topp 10 bästa rundorna</h2>
         <table id="bestRoundsTable">
@@ -236,9 +221,8 @@
         </table>
     </div>
 
-    <!-- LISTA / REDIGERA -->
     <div class="box">
-        <h2>Registrerade rundor (klicka för att redigera)</h2>
+        <h2>Registrerade rundor</h2>
         <table id="roundListTable">
             <tr>
                 <th>Spelare</th>
@@ -256,7 +240,7 @@
 
 <script>
 /* -------------------------
-   SPELARE
+   SPELARLISTA
 -------------------------- */
 let players = [
     "Per S","Stefan Å","Niklas H","Magnus L","Mats L",
@@ -520,7 +504,7 @@ function updateRoundListTable() {
 }
 
 /* -------------------------
-   PWA: SKAPA MANIFEST DYNAMISKT
+   PWA: SKAPA MANIFEST (MED BÅDA IKONERNA)
 -------------------------- */
 const manifest = {
   name: "Måndagsgolfen 2026",
@@ -529,9 +513,25 @@ const manifest = {
   display: "standalone",
   background_color: "#0f2027",
   theme_color: "#00ff80",
-  icons: []
+  icons: [
+    {
+      src: "icon-192.png",
+      sizes: "192x192",
+      type: "image/png"
+    },
+    {
+      src: "icon-512.png",
+      sizes: "512x512",
+      type: "image/png"
+    }
+  ]
 };
 
 const blob = new Blob([JSON.stringify(manifest)], {type: "application/json"});
 const manifestURL = URL.createObjectURL(blob);
-document.getElementById("manifestPlaceholder").setAttribute("href",
+document.getElementById("manifestPlaceholder").setAttribute("href", manifestURL);
+
+</script>
+
+</body>
+</html>
