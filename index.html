@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<title>Måndagsgolfen 2026</title>
+
+<!-- PWA: Manifest skapas dynamiskt -->
+<link rel="manifest" id="manifestPlaceholder">
+
+<meta name="theme-color" content="#00ff80">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        font-family: "Segoe UI", sans-serif;
+        color: #e8f5e9;
+    }
+
+    h1 {
+        text-align: center;
+        padding: 25px 0;
+        margin: 0;
+        font-size: 38px;
+        font-weight: 700;
+        color: #a8ffbf;
+        text-shadow: 0 0 12px #00ff80;
+        letter-spacing: 1px;
+    }
+
+    .container {
+        width: 92%;
+        max-width: 1100px;
+        margin: auto;
+        padding-bottom: 40px;
+    }
+
+    .box {
+        background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(10px);
+        padding: 22px;
+        border-radius: 16px;
+        margin-top: 25px;
+        box-shadow: 0 0 25px rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.1);
+        transition: 0.25s;
+        flex: 1;
+        margin-right: 20px;
+    }
+
+    .row {
+        display: flex;
+        gap: 20px;
+        margin-top: 25px;
+    }
+
+    h2 {
+        margin-top: 0;
+        font-size: 24px;
+        color: #b2ffcb;
+        text-shadow: 0 0 8px #00ff80;
+    }
+
+    select, input {
+        width: 100%;
+        padding: 12px;
+        margin: 8px 0 18px 0;
+        border-radius: 10px;
+        border: none;
+        background: rgba(255,255,255,0.15);
+        color: #fff;
+        font-size: 16px;
+    }
+
+    select option {
+        background-color: #203a43;
+        color: #ffffff;
+        font-size: 16px;
+        padding: 8px;
+    }
+
+    button {
+        padding: 12px 18px;
+        background: linear-gradient(135deg, #00ff80, #00cc66);
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        color: #003319;
+        width: 100%;
+    }
+
+    .delete-btn {
+        background: #ff4d4d;
+        color: white;
+        padding: 6px 10px;
+        border-radius: 6px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+        font-size: 15px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    th {
+        background: rgba(0,0,0,0.35);
+        color: #a8ffbf;
+        padding: 12px;
+    }
+
+    td {
+        padding: 10px;
+        text-align: center;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    /* MOBILANPASSNING */
+    @media (max-width: 768px) {
+        .row {
+            flex-direction: column;
+        }
+
+        .box {
+            margin-right: 0;
+        }
+
+        table {
+            font-size: 14px;
+        }
+
+        input, select, button {
+            font-size: 18px;
+            padding: 14px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<h1>Måndagsgolfen 2026</h1>
+
+<div class="container">
+
+    <!-- REGISTRERA RUNDA -->
+    <div class="box">
+        <h2>Registrera runda</h2>
+
+        <label>Spelare:</label>
+        <select id="playerSelect"></select>
+
+        <label>Bana:</label>
+        <select id="courseSelect">
+            <option value="Gamla">Gamla</option>
+            <option value="Avan">Avan</option>
+        </select>
+
+        <label>Score:</label>
+        <input type="number" id="scoreInput">
+
+        <label>Birdies:</label>
+        <input type="number" id="birdieInput">
+
+        <label>Närmast hål (0–5):</label>
+        <input type="number" id="closestInput" min="0" max="5">
+
+        <label>Inspelade pengar:</label>
+        <input type="number" id="moneyInput">
+
+        <button onclick="saveRound()">Spara runda</button>
+    </div>
+
+    <!-- GAMLA + AVAN -->
+    <div class="row">
+        <div class="box">
+            <h2>Gamla – Leaderboard</h2>
+            <table id="gamlaTable">
+                <tr><th>Spelare</th><th>Resultat</th><th>Rundor</th></tr>
+            </table>
+        </div>
+
+        <div class="box">
+            <h2>Avan – Leaderboard</h2>
+            <table id="avanTable">
+                <tr><th>Spelare</th><th>Resultat</th><th>Rundor</th></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- PENGAR -->
+    <div class="box">
+        <h2>Inspelade pengar</h2>
+        <table id="moneyTable">
+            <tr><th>Spelare</th><th>Pengar</th></tr>
+        </table>
+    </div>
+
+    <!-- BIRDIES + NÄRMAST -->
+    <div class="row">
+        <div class="box">
+            <h2>Birdies</h2>
+            <table id="birdieTable">
+                <tr><th>Spelare</th><th>Birdies</th></tr>
+            </table>
+        </div>
+
+        <div class="box">
+            <h2>Närmast hål</h2>
+            <table id="closestTable">
+                <tr><th>Spelare</th><th>Antal</th></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- TOPP 10 -->
+    <div class="box">
+        <h2>Topp 10 bästa rundorna</h2>
+        <table id="bestRoundsTable">
+            <tr>
+                <th>Spelare</th>
+                <th>Bana</th>
+                <th>Score</th>
+                <th>Par</th>
+                <th>Birdies</th>
+                <th>Närmast</th>
+                <th>Pengar</th>
+            </tr>
+        </table>
+    </div>
+
+    <!-- LISTA / REDIGERA -->
+    <div class="box">
+        <h2>Registrerade rundor (klicka för att redigera)</h2>
+        <table id="roundListTable">
+            <tr>
+                <th>Spelare</th>
+                <th>Bana</th>
+                <th>Score</th>
+                <th>Birdies</th>
+                <th>Närmast</th>
+                <th>Pengar</th>
+                <th>Ta bort</th>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
+<script>
+/* -------------------------
+   SPELARE
+-------------------------- */
+let players = [
+    "Per S","Stefan Å","Niklas H","Magnus L","Mats L",
+    "Eric S","Crille J","Mickael J","Thomas P","Magnus N",
+    "Henrik L","Kjell F","Bolla","Bejja","Matte N",
+    "Anders S","Forsell","Ollas","Jonas A","Timo"
+];
+
+let rounds = JSON.parse(localStorage.getItem("rounds") || "[]");
+
+document.addEventListener("DOMContentLoaded", () => {
+    updatePlayerSelect();
+    updateTables();
+});
+
+/* -------------------------
+   DROPDOWN
+-------------------------- */
+function updatePlayerSelect() {
+    const select = document.getElementById("playerSelect");
+    select.innerHTML = "";
+    players.forEach(player => {
+        const option = document.createElement("option");
+        option.value = player;
+        option.textContent = player;
+        select.appendChild(option);
+    });
+}
+
+/* -------------------------
+   SPARA RUNDA
+-------------------------- */
+function saveRound() {
+    const player = document.getElementById("playerSelect").value;
+    const course = document.getElementById("courseSelect").value;
+    const score = Number(document.getElementById("scoreInput").value);
+    const birdies = Number(document.getElementById("birdieInput").value);
+    const closest = Number(document.getElementById("closestInput").value);
+    const money = Number(document.getElementById("moneyInput").value);
+
+    rounds.push({ player, course, score, birdies, closest, money });
+    localStorage.setItem("rounds", JSON.stringify(rounds));
+
+    document.getElementById("scoreInput").value = "";
+    document.getElementById("birdieInput").value = "";
+    document.getElementById("closestInput").value = "";
+    document.getElementById("moneyInput").value = "";
+
+    updateTables();
+}
+
+/* -------------------------
+   TA BORT RUNDA
+-------------------------- */
+function deleteRound(index) {
+    rounds.splice(index, 1);
+    localStorage.setItem("rounds", JSON.stringify(rounds));
+    updateTables();
+}
+
+/* -------------------------
+   LÄS IN RUNDA I FORMULÄR
+-------------------------- */
+function loadRound(index) {
+    const r = rounds[index];
+
+    document.getElementById("playerSelect").value = r.player;
+    document.getElementById("courseSelect").value = r.course;
+    document.getElementById("scoreInput").value = r.score;
+    document.getElementById("birdieInput").value = r.birdies;
+    document.getElementById("closestInput").value = r.closest;
+    document.getElementById("moneyInput").value = r.money;
+}
+
+/* -------------------------
+   TABELLUPPDATERING
+-------------------------- */
+function updateTables() {
+    updateCourseTables();
+    updateMoneyTable();
+    updateBirdieTable();
+    updateClosestTable();
+    updateRoundListTable();
+    updateBestRoundsTable();
+}
+
+/* -------------------------
+   LEADERBOARD GAMLA/AVAN
+-------------------------- */
+function updateCourseTables() {
+    const gamlaTable = document.getElementById("gamlaTable");
+    const avanTable = document.getElementById("avanTable");
+
+    gamlaTable.innerHTML = "<tr><th>Spelare</th><th>Resultat</th><th>Rundor</th></tr>";
+    avanTable.innerHTML = "<tr><th>Spelare</th><th>Resultat</th><th>Rundor</th></tr>";
+
+    const gamlaScores = {};
+    const avanScores = {};
+
+    players.forEach(p => {
+        gamlaScores[p] = [];
+        avanScores[p] = [];
+    });
+
+    rounds.forEach(r => {
+        const adj = r.score - 72;
+        if (r.course === "Gamla") gamlaScores[r.player].push(adj);
+        if (r.course === "Avan") avanScores[r.player].push(adj);
+    });
+
+    function best4(arr) {
+        if (arr.length === 0) return null;
+        return arr.sort((a,b)=>a-b).slice(0,4).reduce((a,b)=>a+b,0);
+    }
+
+    function fmt(n) { return n === null ? "-" : (n>0?`+${n}`:n); }
+
+    players.forEach(p => {
+        gamlaTable.innerHTML += `
+            <tr>
+                <td>${p}</td>
+                <td>${fmt(best4(gamlaScores[p]))}</td>
+                <td>${gamlaScores[p].length}</td>
+            </tr>`;
+        avanTable.innerHTML += `
+            <tr>
+                <td>${p}</td>
+                <td>${fmt(best4(avanScores[p]))}</td>
+                <td>${avanScores[p].length}</td>
+            </tr>`;
+    });
+}
+
+/* -------------------------
+   PENGAR
+-------------------------- */
+function updateMoneyTable() {
+    const totals = {};
+    players.forEach(p => totals[p] = 0);
+    rounds.forEach(r => totals[r.player] += r.money);
+
+    const table = document.getElementById("moneyTable");
+    table.innerHTML = "<tr><th>Spelare</th><th>Pengar</th></tr>";
+
+    players
+        .map(p => ({ name:p, money:totals[p] }))
+        .sort((a,b)=>b.money-a.money)
+        .forEach(item => {
+            table.innerHTML += `<tr><td>${item.name}</td><td>${item.money}</td></tr>`;
+        });
+}
+
+/* -------------------------
+   BIRDIES
+-------------------------- */
+function updateBirdieTable() {
+    const totals = {};
+    players.forEach(p => totals[p] = 0);
+    rounds.forEach(r => totals[r.player] += r.birdies);
+
+    const table = document.getElementById("birdieTable");
+    table.innerHTML = "<tr><th>Spelare</th><th>Birdies</th></tr>";
+
+    players
+        .map(p => ({ name:p, birdies:totals[p] }))
+        .sort((a,b)=>b.birdies-a.birdies)
+        .forEach(item => {
+            table.innerHTML += `<tr><td>${item.name}</td><td>${item.birdies}</td></tr>`;
+        });
+}
+
+/* -------------------------
+   NÄRMAST HÅL
+-------------------------- */
+function updateClosestTable() {
+    const totals = {};
+    players.forEach(p => totals[p] = 0);
+    rounds.forEach(r => totals[r.player] += r.closest);
+
+    const table = document.getElementById("closestTable");
+    table.innerHTML = "<tr><th>Spelare</th><th>Antal</th></tr>";
+
+    players
+        .map(p => ({ name:p, closest:totals[p] }))
+        .sort((a,b)=>b.closest-a.closest)
+        .forEach(item => {
+            table.innerHTML += `<tr><td>${item.name}</td><td>${item.closest}</td></tr>`;
+        });
+}
+
+/* -------------------------
+   TOPP 10
+-------------------------- */
+function updateBestRoundsTable() {
+    const table = document.getElementById("bestRoundsTable");
+
+    table.innerHTML = `
+        <tr>
+            <th>Spelare</th>
+            <th>Bana</th>
+            <th>Score</th>
+            <th>Par</th>
+            <th>Birdies</th>
+            <th>Närmast</th>
+            <th>Pengar</th>
+        </tr>
+    `;
+
+    rounds
+        .map(r => ({...r, par:r.score-72}))
+        .sort((a,b)=>a.par-b.par)
+        .slice(0,10)
+        .forEach(r => {
+            table.innerHTML += `
+                <tr>
+                    <td>${r.player}</td>
+                    <td>${r.course}</td>
+                    <td>${r.score}</td>
+                    <td>${r.par>0?`+${r.par}`:r.par}</td>
+                    <td>${r.birdies}</td>
+                    <td>${r.closest}</td>
+                    <td>${r.money}</td>
+                </tr>`;
+        });
+}
+
+/* -------------------------
+   LISTA / REDIGERA
+-------------------------- */
+function updateRoundListTable() {
+    const table = document.getElementById("roundListTable");
+    table.innerHTML = `
+        <tr>
+            <th>Spelare</th>
+            <th>Bana</th>
+            <th>Score</th>
+            <th>Birdies</th>
+            <th>Närmast</th>
+            <th>Pengar</th>
+            <th>Ta bort</th>
+        </tr>
+    `;
+
+    rounds.forEach((r, index) => {
+        table.innerHTML += `
+            <tr onclick="loadRound(${index})" style="cursor:pointer;">
+                <td>${r.player}</td>
+                <td>${r.course}</td>
+                <td>${r.score}</td>
+                <td>${r.birdies}</td>
+                <td>${r.closest}</td>
+                <td>${r.money}</td>
+                <td>
+                    <button class="delete-btn" onclick="event.stopPropagation(); deleteRound(${index})">
+                        Ta bort
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+/* -------------------------
+   PWA: SKAPA MANIFEST DYNAMISKT
+-------------------------- */
+const manifest = {
+  name: "Måndagsgolfen 2026",
+  short_name: "Golfen",
+  start_url: "index.html",
+  display: "standalone",
+  background_color: "#0f2027",
+  theme_color: "#00ff80",
+  icons: []
+};
+
+const blob = new Blob([JSON.stringify(manifest)], {type: "application/json"});
+const manifestURL = URL.createObjectURL(blob);
+document.getElementById("manifestPlaceholder").setAttribute("href",
